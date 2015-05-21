@@ -3,6 +3,17 @@
 
 using namespace std;
 
+
+void DMA::resetRegs()
+{
+	source = 0;
+	target = 0;
+	size = 0;
+	start = 0;
+}
+
+// ------------DMA as Master--------------
+
 sc_uint<32> DMA::master_read(sc_uint<32> addr)
 {
 	addr_m = addr;
@@ -39,8 +50,12 @@ void DMA::movingData(void)
 	while(1) {
 		wait();
 		if (!irqClr_s.read() && (offset > (size - 1)*4) ) {
+			start = 0;
 			irq_s = 1;
 			continue;
+		} else if (irqClr_s.read()) {
+			resetRegs();
+			irq_s = 0;
 		} else {
 			irq_s = 0;
 		}
@@ -96,10 +111,7 @@ void DMA::slave_transactor()
 {	
 	wait();
 	//reset
-	source = 0;
-	target = 0;
-	size = 0;
-	start = 0;
+	resetRegs();
 	
 	while (1) {
 		wait();	

@@ -37,6 +37,8 @@ SC_MODULE(DMA)
 	sc_uint<32> read_registers(sc_uint<32> addr);
 	void write_registers(sc_uint<32> addr, sc_uint<32> data);
 
+	void resetRegs();
+
 	//Intenal registers
 	sc_uint<32> source; //straring source memory address
 	sc_uint<32> target; //staring target memory address
@@ -46,7 +48,6 @@ SC_MODULE(DMA)
 
 	SC_CTOR(DMA) 
 	{	
-
 		SC_CTHREAD(slave_transactor, clk.pos() );
 		reset_signal_is(rst, false);
 
