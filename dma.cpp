@@ -70,7 +70,7 @@ void DMA::movingData(void)
 
 sc_uint<32> DMA::read_registers(sc_uint<32> addr)
 {	
-    return (addr == 0)? source: (addr == 1)? target: (addr == 3)? size: start;
+    return (addr == 0)? source: (addr == 1)? target: (addr == 2)? size: start;
 }
 
 void DMA::write_registers(sc_uint<32> addr, sc_uint<32> data)
@@ -93,15 +93,24 @@ void DMA::write_registers(sc_uint<32> addr, sc_uint<32> data)
 }
 
 void DMA::slave_transactor()
-{
-	//Q: read data will delay one clock cycle!?
-	if (opreq_s.read() && rw_s.read()) {
-		rdata_s = read_registers(addr_s.read() / 4);
-        cout << "[read] address = " << addr_s.read() << ", data = " << rdata_s.read() << endl;        
-        cout << endl;
-	} else if (opreq_s.read() && !rw_s.read()) {
-        cout << "[write] address = " << addr_s.read() << ", data = " << wdata_s.read() << endl;        
-        cout << endl;
-        write_registers(addr_s.read() / 4, wdata_s.read());        
+{	
+	wait();
+	//reset
+	source = 0;
+	target = 0;
+	size = 0;
+	start = 0;
+	
+	while (1) {
+		wait();	
+		if (opreq_s.read() && rw_s.read()) {
+			rdata_s = read_registers(addr_s.read() / 4);
+	        cout << "[read] address = " << addr_s.read() << ", data = " << rdata_s.read() << endl;        
+	        cout << endl;
+		} else if (opreq_s.read() && !rw_s.read()) {
+	        cout << "[write] address = " << addr_s.read() << ", data = " << wdata_s.read() << endl;        
+	        cout << endl;
+	        write_registers(addr_s.read() / 4, wdata_s.read());        
+		}
 	}
 }
