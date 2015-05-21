@@ -1,21 +1,41 @@
 #include "dma.h"
 
+
+sc_time clkPrd(5, SC_NS);
+sc_clock clk("clock", clkPrd, 0.5, SC_ZERO_TIME, true);
+
+sc_signal<bool> rst;
+
+//slave
+sc_signal<sc_uint<32> > addr_s, wdata_s, rdata_s;
+sc_signal<bool> rw_s, opreq_s, opack_s, irq_s, irqClr_s;
+
+//master
+sc_signal<sc_uint<32> > addr_m, rdata_m, wdata_m;
+sc_signal<bool> rw_m, opreq_m, opack_m;
+
+DMA dma("DMA controller");
+
+void rwTrasaction(sc_uint<32> addr, sc_uint<32> data,bool rw)
+{
+    if(!rw) {
+        addr_s.write(addr);
+        wdata_s.write(data);
+        rw_s.write(0);
+    } else {
+        addr_s.write(addr);
+        rw_s.write(1);
+    }
+
+    opreq_s.write(1);
+    sc_start(clkPrd);
+    opreq_s.write(0);
+    sc_start(clkPrd);
+}
+
 int sc_main(int argc, char* argv[])
 {
-    sc_time clkPrd(5, SC_NS);
-	sc_clock clk("clock", clkPrd, 0.5, SC_ZERO_TIME, true);
-
-    sc_signal<bool> rst;
-
-    //slave
-    sc_signal<sc_uint<32> > addr_s, wdata_s, rdata_s;
-    sc_signal<bool> rw_s, opreq_s, opack_s, irq_s, irqClr_s;
-
-    //master
-    sc_signal<sc_uint<32> > addr_m, rdata_m, wdata_m;
-    sc_signal<bool> rw_m, opreq_m, opack_m;
-
-    DMA dma("DMA controller");
+    
 
     dma.clk(clk);
     dma.rst(rst);
@@ -60,79 +80,36 @@ int sc_main(int argc, char* argv[])
     sc_trace(tf, opreq_m, "opreq_m");
     sc_trace(tf, opack_m, "opack_m");
 
+    rst.write(1);
+    sc_start(clkPrd);
+
     rst.write(0);
     sc_start(clkPrd);
 
     irqClr_s.write(0);
     rst.write(1);
+    sc_start(clkPrd);
 
 // ---- write to DMA internal registers ----
 
     //write to register "source"
-    addr_s.write(0x0);
-    wdata_s.write(0x40000000);
-    rw_s.write(0);
-    opreq_s.write(1);
-    sc_start(clkPrd);
-    opreq_s.write(0);
-    sc_start(clkPrd);
-
+    rwTrasaction(0x0, 0x40000000, 0);
     //write to register "target"
-    addr_s.write(0x4);
-    wdata_s.write(0x20000000);
-    rw_s.write(0);
-    opreq_s.write(1);
-    sc_start(clkPrd);
-    opreq_s.write(0);
-    sc_start(clkPrd);
-
+    rwTrasaction(0x4, 0x20000000, 0);
     //write to register "size"
-    addr_s.write(0x8);
-    wdata_s.write(5);
-    rw_s.write(0);
-    opreq_s.write(1);
-    sc_start(clkPrd);
-    opreq_s.write(0);
-    sc_start(clkPrd);
-
+    rwTrasaction(0x8, 5, 0);
     //write to register "start"
-    addr_s.write(0xc);
-    wdata_s.write(0xffffffff);
-    rw_s.write(0);
-    opreq_s.write(1);
-    sc_start(clkPrd);
-    opreq_s.write(0);
-    sc_start(clkPrd);
+    rwTrasaction(0xc, 0xffffffff, 0);
 
 // ---- read the contain of DMA internel registers
     //read register "source"
-    addr_s.write(0x0);
-    rw_s.write(1);
-    opreq_s.write(1);
-    sc_start(clkPrd*2);
-    opreq_s.write(0);
-    sc_start(clkPrd);
+    rwTrasaction(0x0, 0, 1);
     //read register "target"
-    addr_s.write(0x4);
-    rw_s.write(1);
-    opreq_s.write(1);
-    sc_start(clkPrd*2);
-    opreq_s.write(0);
-    sc_start(clkPrd);
+    rwTrasaction(0x4, 0, 1);
     //read register "size"
-    addr_s.write(0x8);
-    rw_s.write(1);
-    opreq_s.write(1);
-    sc_start(clkPrd*2);
-    opreq_s.write(0);
-    sc_start(clkPrd);
+    rwTrasaction(0x8, 0, 1);
     //read register "start"
-    addr_s.write(0xc);
-    rw_s.write(1);
-    opreq_s.write(1);
-    sc_start(clkPrd*2);
-    opreq_s.write(0);
-    sc_start(clkPrd);
+    rwTrasaction(0xc, 0, 1);
     
     //DMA is moving data
     int i = 0;
@@ -158,16 +135,7 @@ int sc_main(int argc, char* argv[])
         
         if (irq_s == 1) break;
     }
-    
-    //clear the register "start"
-    addr_s.write(0xc);
-    wdata_s.write(0x0);
-    rw_s.write(0);
-    opreq_s.write(1);
-    sc_start(clkPrd);
-    opreq_s.write(0);
-    sc_start(clkPrd);
-    
+        
     irqClr_s.write(1);
     sc_start(clkPrd * 20);
 
