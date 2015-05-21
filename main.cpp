@@ -26,9 +26,13 @@ void rwTrasaction(sc_uint<32> addr, sc_uint<32> data,bool rw)
         addr_s.write(addr);
         rw_s.write(1);
     }
-
     opreq_s.write(1);
     sc_start(clkPrd);
+    
+    while(!opack_s) {
+        sc_start(clkPrd);
+    }
+
     opreq_s.write(0);
     sc_start(clkPrd);
 }

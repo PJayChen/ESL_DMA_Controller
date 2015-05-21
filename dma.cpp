@@ -117,12 +117,16 @@ void DMA::slave_transactor()
 		wait();	
 		if (opreq_s.read() && rw_s.read()) {
 			rdata_s = read_registers(addr_s.read() / 4);
+			opack_s.write(1);
 	        cout << "[read] address = " << addr_s.read() << ", data = " << rdata_s.read() << endl;        
 	        cout << endl;
 		} else if (opreq_s.read() && !rw_s.read()) {
 	        cout << "[write] address = " << addr_s.read() << ", data = " << wdata_s.read() << endl;        
 	        cout << endl;
-	        write_registers(addr_s.read() / 4, wdata_s.read());        
+	        write_registers(addr_s.read() / 4, wdata_s.read());
+	        opack_s.write(1);        
+		} else {
+			opack_s.write(0);
 		}
 	}
 }
