@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void AHB_wrapper::enableWrite(void)
+void AHB_wrapper::writeEnable(void)
 {
     ahb_write_w = ahb_write;
     if (HSEL.read() && (HTRANS.read() == SEQ || HTRANS.read() == NONSEQ) && HWRITE.read()) {

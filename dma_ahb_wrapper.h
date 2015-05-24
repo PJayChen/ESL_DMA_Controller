@@ -24,9 +24,10 @@ SC_MODULE(AHB_wrapper) {
     sc_out<sc_uint<2> > HRESP;
     /* ----------------------------------- */
 
+    /* --- Declare a DMA controller --- */
     DMA *dmac1;
 
-    //wrapped in/out put, named by prefix "w_"
+    /* --- wrapped in/out put, named by prefix "w_" --- */
     //slave
     sc_signal<sc_uint<32> > w_addr_s, w_wdata_s, w_rdata_s;
 	sc_signal<bool> w_rw_s, w_opreq_s, w_opack_s, w_irq_s, w_irqClr_s;
@@ -34,18 +35,23 @@ SC_MODULE(AHB_wrapper) {
     sc_signal<sc_uint<32> > w_addr_m, w_wdata_m, w_rdata_m;
     sc_signal<bool> w_rw_m, w_opreq_m, w_opack_m;
 
-	//internal variables
+	/* --- internal variables --- */
 	sc_signal<bool> ahb_write, ahb_write_w;
 	sc_signal<sc_uint<5> > HADDR_d; //store address one cycle. posfix "_d" means delay
 
-	//AHB Slave functions
-	void enableWrite(void);
-	void writeToRegs(void);
+
+	/* --- AHB Slave functions --- */
+    //share
     void updateWrapperRegs(void);
     void respSignal(void){
         //assgin HRESP = OK; not use this functoin; simplify the condition
         HRESP.write(OK);
     }
+    //write
+	void writeEnable(void);
+	void writeToRegs(void);
+    
+    //read
 
 	/* ----- parameters ----- */
 	//HTRANS 
@@ -97,7 +103,7 @@ SC_MODULE(AHB_wrapper) {
         SC_METHOD(respSignal);
         sensitive << HRESETn;
 
-    	SC_METHOD(enableWrite);
+    	SC_METHOD(writeEnable);
     	sensitive << HSEL << HTRANS << HWRITE << ahb_write;
 
     	SC_METHOD(writeToRegs);
