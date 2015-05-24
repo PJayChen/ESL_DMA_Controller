@@ -1,14 +1,14 @@
 SYSTEMC_DIR = /home/pjay/systemc-2.3.1
-PROJECT     = DMA
+PROJECT     = DMA_AHB
 BUILDFLAGS  = -g3
 CXX         = g++
 
 INCFLAGS    = -I. -I${SYSTEMC_DIR}/include
 LDFLAGS     = -L${SYSTEMC_DIR}/lib-linux64 -lsystemc -lm -Wl,-rpath,${SYSTEMC_DIR}/lib-linux64
-SRC_CPPHEAD = dma
+SRC_CPPHEAD = dma dma_ahb_wrapper
 SRC_CPP     =
 HEADERS     =
-MAIN        = main.cpp
+MAIN        = tb_ahbWrapper.cpp
 OBJECTS     = $(SRC_CPPHEAD:=.o) $(SRC_CPP:cpp=o)
 
 EXE = $(PROJECT)
