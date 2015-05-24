@@ -119,7 +119,7 @@ void DMA::slave_transactor()
 		if (opreq_s.read() && rw_s.read()) {
 			rdata_s = read_registers(addr_s.read() / 4);
 			opack_s.write(1);
-	        cout << "[read] address = " << addr_s.read() << ", data = " << rdata_s.read() << endl;        
+	        //cout << "[read] address = " << addr_s.read() << ", data = " << rdata_s.read() << endl;        
 	        cout << endl;
 		} else if (opreq_s.read() && !rw_s.read()) {
 	        cout << "[write] address = " << addr_s.read() << ", data = " << wdata_s.read() << endl;        
