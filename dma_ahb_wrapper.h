@@ -35,23 +35,26 @@ SC_MODULE(AHB_wrapper) {
     sc_signal<sc_uint<32> > w_addr_m, w_wdata_m, w_rdata_m;
     sc_signal<bool> w_rw_m, w_opreq_m, w_opack_m;
 
-	/* --- internal variables --- */
+	/* --- internal variables/signals --- */
+    sc_signal<sc_uint<5> > HADDR_d; //store address one cycle. posfix "_d" means delay
+    //write
 	sc_signal<bool> ahb_write, ahb_write_w;
-	sc_signal<sc_uint<5> > HADDR_d; //store address one cycle. posfix "_d" means delay
-
+    //read
+    sc_signal<bool> ahb_read, ahb_read_w;
 
 	/* --- AHB Slave functions --- */
     //share
+    void rwRegs(void);
     void updateWrapperRegs(void);
     void respSignal(void){
         //assgin HRESP = OK; not use this functoin; simplify the condition
         HRESP.write(OK);
     }
     //write
-	void writeEnable(void);
-	void writeToRegs(void);
-    
+	void writeEnable(void);  
     //read
+    void readEnable(void);
+    void readFromRegs(void);
 
 	/* ----- parameters ----- */
 	//HTRANS 
@@ -106,8 +109,15 @@ SC_MODULE(AHB_wrapper) {
     	SC_METHOD(writeEnable);
     	sensitive << HSEL << HTRANS << HWRITE << ahb_write;
 
-    	SC_METHOD(writeToRegs);
-    	sensitive << ahb_write << HWDATA << HADDR_d;
+    	SC_METHOD(rwRegs);
+    	sensitive << ahb_write << ahb_read << HWDATA << HADDR_d;
+
+
+        SC_METHOD(readEnable);
+        sensitive << HSEL << HTRANS << HWRITE << ahb_read;
+
+        SC_METHOD(readFromRegs);
+        sensitive << w_rdata_s;
 
         SC_CTHREAD(updateWrapperRegs, HCLK.pos() );
         reset_signal_is(HRESETn, false);

@@ -87,6 +87,7 @@ int sc_main(int argc, char* argv[])
     HRESETn.write(1);
     sc_start(clkPrd);
 
+    // write transaction
     // 1) -------------
     cout << "1) -------------" << endl;
     cout << "@" << sc_time_stamp() << ": initial control signals" << endl;
@@ -150,6 +151,61 @@ int sc_main(int argc, char* argv[])
     sc_start(clkPrd*1.2);
     
     sc_start(clkPrd*0.8);    
+
+
+    //read transaction
+    // 1) -------------
+    cout << "1) -------------" << endl;
+    cout << "@" << sc_time_stamp() << ": initial control signals" << endl;
+    //init control signals
+    HWRITE.write(0);
+    HSEL.write(1);
+    HTRANS.write(AHB_wrapper::NONSEQ);
+    cout << "@" << sc_time_stamp() << ": 1st HADDR = 0x00" << endl;
+    HADDR.write(0x00);
+    sc_start(clkPrd*1.2);
+    // 2) -------------
+    cout << "2) -------------" << endl;
+    cout << "@" << sc_time_stamp() << ": 2nd HADDR = 0x04" << endl;
+    HADDR.write(0x04);
+    HWRITE.write(0);
+    HSEL.write(1);
+    HTRANS.write(AHB_wrapper::NONSEQ);
+    sc_start(clkPrd*0.8);
+    cout << "HADDR = 0x00, HRDATA = " << HRDATA.read() << endl;
+    sc_start(clkPrd*0.4);
+    // 3) -------------
+    cout << "3) -------------" << endl;
+    cout << "@" << sc_time_stamp() << ": 3rd HADDR = 0x08" << endl;
+    HADDR.write(0x08);
+    HWRITE.write(0);
+    HSEL.write(1);
+    HTRANS.write(AHB_wrapper::NONSEQ);
+    sc_start(clkPrd*0.8);
+    cout << "HADDR = 0x04, HRDATA = " << HRDATA.read() << endl;
+    sc_start(clkPrd*0.4);
+    // 4) -------------
+    cout << "4) -------------" << endl;
+    cout << "@" << sc_time_stamp() << ": 4th HADDR = 0x0c" << endl;
+    HADDR.write(0x0c);
+    HWRITE.write(0);
+    HSEL.write(1);
+    HTRANS.write(AHB_wrapper::NONSEQ);
+    sc_start(clkPrd*0.8);
+    cout << "HADDR = 0x08, HRDATA = " << HRDATA.read() << endl;
+    sc_start(clkPrd*0.4);
+    // 5) finish
+    cout << "5) --- finish writing ---" << endl;
+    cout << "@" << sc_time_stamp() << ": HTRANS = IDLE" << endl;
+    HADDR.write(NULL);
+    HWRITE.write(0);
+    HSEL.write(0);   //finish write transaction
+    HTRANS.write(AHB_wrapper::IDLE);
+    sc_start(clkPrd*0.8);
+    cout << "HADDR = 0x0c, HRDATA = " << HRDATA.read() << endl;
+    sc_start(clkPrd*0.4);
+    
+    sc_start(clkPrd*0.8); 
 
     for (int i = 0; i < 2; i++){
         cout << "@" << sc_time_stamp() << endl;
