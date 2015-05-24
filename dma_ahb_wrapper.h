@@ -44,9 +44,9 @@ SC_MODULE(AHB_wrapper) {
 
 	/* --- AHB Slave functions --- */
     //share
-    void rwRegs(void);
+    void rwControlRegs(void);
     void updateWrapperRegs(void);
-    void respSignal(void){
+    void updateHRESP(void){
         //assgin HRESP = OK; not use this functoin; simplify the condition
         HRESP.write(OK);
     }
@@ -107,13 +107,13 @@ SC_MODULE(AHB_wrapper) {
         dmac1->opreq_m(w_opreq_m);
         dmac1->opack_m(w_opack_m);
       
-        SC_METHOD(respSignal);
+        SC_METHOD(updateHRESP);
         sensitive << HRESETn;
 
         SC_METHOD(updateHREADY);
         sensitive << w_opack_s;
 
-    	SC_METHOD(rwRegs);
+    	SC_METHOD(rwControlRegs);
     	sensitive << ahb_write << ahb_read << HWDATA << HADDR_d;
 
         SC_METHOD(writeEnable);

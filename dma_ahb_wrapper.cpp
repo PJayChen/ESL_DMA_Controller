@@ -6,7 +6,7 @@ using namespace std;
 
 /* -------- AHB Slave - share  -------- */
 
-void AHB_wrapper::rwRegs(void)
+void AHB_wrapper::rwControlRegs(void)
 {
     if (ahb_write) {
         // Previous "HADDR == HADDR_d" that is the address of 
