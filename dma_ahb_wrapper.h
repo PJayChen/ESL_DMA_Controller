@@ -50,6 +50,10 @@ SC_MODULE(AHB_wrapper) {
         //assgin HRESP = OK; not use this functoin; simplify the condition
         HRESP.write(OK);
     }
+    void updateHREADY(void)
+    {
+        HREADYout.write(w_opack_s);
+    }
     //write
 	void writeEnable(void);  
     //read
@@ -106,13 +110,15 @@ SC_MODULE(AHB_wrapper) {
         SC_METHOD(respSignal);
         sensitive << HRESETn;
 
-    	SC_METHOD(writeEnable);
-    	sensitive << HSEL << HTRANS << HWRITE << ahb_write;
+        SC_METHOD(updateHREADY);
+        sensitive << w_opack_s;
 
     	SC_METHOD(rwRegs);
     	sensitive << ahb_write << ahb_read << HWDATA << HADDR_d;
 
-
+        SC_METHOD(writeEnable);
+        sensitive << HSEL << HTRANS << HWRITE << ahb_write;
+        
         SC_METHOD(readEnable);
         sensitive << HSEL << HTRANS << HWRITE << ahb_read;
 

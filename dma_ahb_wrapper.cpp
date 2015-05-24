@@ -18,13 +18,11 @@ void AHB_wrapper::rwRegs(void)
         w_wdata_s.write(HWDATA.read());
         w_rw_s.write(0);
         w_opreq_s.write(1);      
-        HREADYout.write(w_opack_s);
     } else if (ahb_read) {
         //Data will be read before next rising HCLK edge
         w_addr_s.write(HADDR_d.read()); 
         w_rw_s.write(1);
         w_opreq_s.write(1);      
-        HREADYout.write(w_opack_s);
     } else {
         w_opreq_s.write(0);
     }
