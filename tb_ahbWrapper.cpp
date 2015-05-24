@@ -108,7 +108,7 @@ int sc_main(int argc, char* argv[])
     HWRITE.write(1);
     HSEL.write(1);
     HTRANS.write(AHB_wrapper::NONSEQ);
-    sc_start(clkPrd*1.2);
+    sc_start(clkPrd);
 
     // 3) ------------- stop 
     cout << "3) ------------- stop" << endl;
@@ -118,7 +118,7 @@ int sc_main(int argc, char* argv[])
     HWRITE.write(1);
     HSEL.write(1); 
     HTRANS.write(AHB_wrapper::IDLE); //stop one cycle
-    sc_start(clkPrd*1.2);
+    sc_start(clkPrd);
     sc_start(clkPrd*0.8);    
     // 3) -------------  resume
     cout << "3) ------------- resume" << endl;
@@ -138,7 +138,7 @@ int sc_main(int argc, char* argv[])
     HWRITE.write(1);
     HSEL.write(1);
     HTRANS.write(AHB_wrapper::NONSEQ);
-    sc_start(clkPrd*1.2);
+    sc_start(clkPrd);
 
     // 5) finish
     cout << "5) --- finish writing ---" << endl;
@@ -148,7 +148,7 @@ int sc_main(int argc, char* argv[])
     HWRITE.write(1);
     HSEL.write(0);   //finish write transaction
     HTRANS.write(AHB_wrapper::IDLE);
-    sc_start(clkPrd*1.2);
+    sc_start(clkPrd);
     
     sc_start(clkPrd*0.8);    
 
@@ -171,9 +171,9 @@ int sc_main(int argc, char* argv[])
     HWRITE.write(0);
     HSEL.write(1);
     HTRANS.write(AHB_wrapper::NONSEQ);
-    sc_start(clkPrd*0.8);
-    cout << "HADDR = 0x00, HRDATA = " << HRDATA.read() << endl;
-    sc_start(clkPrd*0.4);
+    sc_start(clkPrd*1);
+    cout << "@" << sc_time_stamp() << ": HADDR = 0x00, HRDATA = " << HRDATA.read() << endl;
+    sc_start(clkPrd*0.2);
     // 3) -------------
     cout << "3) -------------" << endl;
     cout << "@" << sc_time_stamp() << ": 3rd HADDR = 0x08" << endl;
@@ -181,9 +181,9 @@ int sc_main(int argc, char* argv[])
     HWRITE.write(0);
     HSEL.write(1);
     HTRANS.write(AHB_wrapper::NONSEQ);
-    sc_start(clkPrd*0.8);
-    cout << "HADDR = 0x04, HRDATA = " << HRDATA.read() << endl;
-    sc_start(clkPrd*0.4);
+    sc_start(clkPrd*1);
+    cout << "@" << sc_time_stamp() << ": HADDR = 0x04, HRDATA = " << HRDATA.read() << endl;
+    sc_start(clkPrd*0.2);
     // 4) -------------
     cout << "4) -------------" << endl;
     cout << "@" << sc_time_stamp() << ": 4th HADDR = 0x0c" << endl;
@@ -191,19 +191,19 @@ int sc_main(int argc, char* argv[])
     HWRITE.write(0);
     HSEL.write(1);
     HTRANS.write(AHB_wrapper::NONSEQ);
-    sc_start(clkPrd*0.8);
-    cout << "HADDR = 0x08, HRDATA = " << HRDATA.read() << endl;
-    sc_start(clkPrd*0.4);
+    sc_start(clkPrd*1);
+    cout << "@" << sc_time_stamp() << ": HADDR = 0x08, HRDATA = " << HRDATA.read() << endl;
+    sc_start(clkPrd*0.2);
     // 5) finish
-    cout << "5) --- finish writing ---" << endl;
+    cout << "5) --- finish Reading ---" << endl;
     cout << "@" << sc_time_stamp() << ": HTRANS = IDLE" << endl;
     HADDR.write(NULL);
     HWRITE.write(0);
-    HSEL.write(0);   //finish write transaction
+    HSEL.write(0);   //finish read transaction
     HTRANS.write(AHB_wrapper::IDLE);
-    sc_start(clkPrd*0.8);
-    cout << "HADDR = 0x0c, HRDATA = " << HRDATA.read() << endl;
-    sc_start(clkPrd*0.4);
+    sc_start(clkPrd*1);
+    cout << "@" << sc_time_stamp() << ": HADDR = 0x0c, HRDATA = " << HRDATA.read() << endl;
+    sc_start(clkPrd*0.2);
     
     sc_start(clkPrd*0.8); 
 
