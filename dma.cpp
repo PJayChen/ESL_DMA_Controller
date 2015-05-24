@@ -114,7 +114,8 @@ void DMA::slave_transactor()
 	resetRegs();
 	
 	while (1) {
-		wait();	
+		wait();
+		opack_s.write(0);	
 		if (opreq_s.read() && rw_s.read()) {
 			rdata_s = read_registers(addr_s.read() / 4);
 			opack_s.write(1);
@@ -126,7 +127,7 @@ void DMA::slave_transactor()
 	        write_registers(addr_s.read() / 4, wdata_s.read());
 	        opack_s.write(1);        
 		} else {
-			opack_s.write(0);
+			opack_s.write(1);
 		}
 	}
 }
